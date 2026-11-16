@@ -1,5 +1,6 @@
 package com.alphaflix.app.api
 
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,6 +13,10 @@ object ApiClient {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
+    private val gson = GsonBuilder()
+        .setLenient()
+        .create()
+
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(IronInterceptor())
         .addInterceptor(loggingInterceptor)
@@ -23,7 +28,7 @@ object ApiClient {
     val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(ApiConstants.BASE_URL)
         .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
 
     val api: ApiService = retrofit.create(ApiService::class.java)
