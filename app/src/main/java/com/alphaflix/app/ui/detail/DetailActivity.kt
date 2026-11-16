@@ -57,7 +57,7 @@ class DetailViewModel : ViewModel() {
                             overview.value = d.story ?: ""
                             bannerUrl.value = d.fullBannerUrl
                             posterUrl.value = d.fullPosterUrl
-                            genres.value = d.genres?.joinToString(" · ") ?: ""
+                            genres.value = d.genresText
                             metaLine.value = buildString {
                                 d.releaseYear?.let { append("$it") }
                                 d.episodeCount?.let {
@@ -98,7 +98,7 @@ class DetailViewModel : ViewModel() {
                             overview.value = d.story ?: ""
                             bannerUrl.value = d.fullBannerUrl
                             posterUrl.value = d.fullPosterUrl
-                            genres.value = d.genres?.joinToString(" · ") ?: ""
+                            genres.value = d.genresText
                             rating.value = when (val rv = d.rating) {
                                 is Double -> "%.1f".format(rv)
                                 is Number -> "%.1f".format(rv.toDouble())
@@ -183,7 +183,6 @@ class DetailActivity : AppCompatActivity() {
         viewModel.genres.observe(this) { binding.tvGenres.text = it }
         viewModel.rating.observe(this) { binding.tvRating.text = it }
 
-        // ✅ زدنا هاد البلوك باش نشوفو الأخطاء
         viewModel.error.observe(this) { err ->
             if (!err.isNullOrBlank()) {
                 Log.e("DetailVM", "Error: $err")
