@@ -3,6 +3,7 @@ package com.alphaflix.app.ui.detail
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +19,7 @@ import com.alphaflix.app.models.Episode
 import com.alphaflix.app.ui.adapters.EpisodeAdapter
 import com.alphaflix.app.ui.player.PlayerActivity
 import kotlinx.coroutines.launch
+import android.util.Log
 
 class DetailViewModel : ViewModel() {
     private val repo = MediaRepository()
@@ -41,11 +43,14 @@ class DetailViewModel : ViewModel() {
         viewModelScope.launch {
             isLoading.value = true
             error.value = null
+            Log.d("DetailVM", "load(id=$id, series=$series)")
             if (series) {
                 when (val r = repo.getSeriesDetail(id)) {
                     is ApiResult.Success -> {
+                        Log.d("DetailVM", "series success: ${r.data}")
                         val d = r.data.data
                         if (d == null) {
+                            Log.e("DetailVM", "series data is null")
                             error.value = "لا توجد بيانات"
                         } else {
                             title.value = d.displayTitle
@@ -74,14 +79,19 @@ class DetailViewModel : ViewModel() {
                             }
                         }
                     }
-                    is ApiResult.Error -> error.value = r.message
+                    is ApiResult.Error -> {
+                        Log.e("DetailVM", "series error: ${r.message}")
+                        error.value = r.message
+                    }
                     else -> {}
                 }
             } else {
                 when (val r = repo.getMovieDetail(id)) {
                     is ApiResult.Success -> {
+                        Log.d("DetailVM", "movie success: ${r.data}")
                         val d = r.data.data
                         if (d == null) {
+                            Log.e("DetailVM", "movie data is null")
                             error.value = "لا توجد بيانات"
                         } else {
                             title.value = d.displayTitle
@@ -115,7 +125,10 @@ class DetailViewModel : ViewModel() {
                             isHls.value = link?.preferHls == true || d.isHls == 1
                         }
                     }
-                    is ApiResult.Error -> error.value = r.message
+                    is ApiResult.Error -> {
+                        Log.e("DetailVM", "movie error: ${r.message}")
+                        error.value = r.message
+                    }
                     else -> {}
                 }
             }
@@ -139,6 +152,7 @@ class DetailActivity : AppCompatActivity() {
 
         mediaId = intent.getIntExtra("mediaId", 0)
         series = intent.getBooleanExtra("isSeries", false)
+        Log.d("DetailVM", "Activity received: mediaId=$mediaId, series=$series")
 
         episodeAdapter = EpisodeAdapter { ep ->
             val url = ep.playUrl
@@ -168,6 +182,14 @@ class DetailActivity : AppCompatActivity() {
         viewModel.metaLine.observe(this) { binding.tvMeta.text = it }
         viewModel.genres.observe(this) { binding.tvGenres.text = it }
         viewModel.rating.observe(this) { binding.tvRating.text = it }
+
+        // ✅ زدنا هاد البلوك باش نشوفو الأخطاء
+        viewModel.error.observe(this) { err ->
+            if (!err.isNullOrBlank()) {
+                Log.e("DetailVM", "Error: $err")
+                Toast.makeText(this, "خطأ: $err", Toast.LENGTH_LONG).show()
+            }
+        }
 
         viewModel.bannerUrl.observe(this) {
             Glide.with(this).load(it).centerCrop()
