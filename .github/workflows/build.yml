@@ -46,6 +46,14 @@ jobs:
           PROPS
           fi
 
+      - name: Download real gradle-wrapper.jar
+        run: |
+          mkdir -p gradle/wrapper
+          curl -fsSL \
+            "https://raw.githubusercontent.com/gradle/gradle/v8.5.0/gradle/wrapper/gradle-wrapper.jar" \
+            -o gradle/wrapper/gradle-wrapper.jar
+          echo "wrapper jar size: $(wc -c < gradle/wrapper/gradle-wrapper.jar) bytes"
+
       - name: Decode keystore (optional)
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
