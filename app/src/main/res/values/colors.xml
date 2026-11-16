@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#E50914</color>
+    <color name="colorPrimaryDark">#B20710</color>
+    <color name="colorAccent">#E50914</color>
+    <color name="bg_dark">#0F0F0F</color>
+    <color name="bg_card">#1A1A1A</color>
+    <color name="bg_surface">#222222</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="text_hint">#666666</color>
+    <color name="rating_gold">#F5C518</color>
+    <color name="live_red">#FF0000</color>
+    <color name="overlay_gradient">#CC000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+</resources>

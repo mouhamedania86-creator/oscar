@@ -1,0 +1,22 @@
+# ── Build outputs ────────────────────────────────────────────────────────────
+/build
+/app/build
+*.apk
+*.aab
+*.aar
+
+# ── Signing secrets (NEVER commit these) ─────────────────────────────────────
+keystore.properties
+*.jks
+*.keystore
+release.jks
+
+# ── Android Studio ───────────────────────────────────────────────────────────
+*.iml
+.gradle/
+.idea/
+local.properties
+.DS_Store
+
+# ── Gradle wrapper jar (optional — keep if you want offline builds) ───────────
+# gradle/wrapper/gradle-wrapper.jar
