@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.alphaflix.app.api.ApiConstants
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 // ── Pagination ────────────────────────────────────────────────────────────────
 
@@ -26,11 +27,11 @@ data class MediaItem(
     @SerializedName("poster") val poster: String? = null,
     @SerializedName("banner") val banner: String? = null,
     @SerializedName("trailer_url") val trailerUrl: String? = null,
-    @SerializedName("rating") val rating: Any? = null,
+    @SerializedName("rating") val rating: Double? = null,
     @SerializedName("rating_count") val ratingCount: Int? = null,
     @SerializedName("views_count") val viewsCount: Int? = null,
     @SerializedName("release_date") val releaseDate: String? = null,
-    @SerializedName("release_year") val releaseYear: Any? = null,
+    @SerializedName("release_year") val releaseYear: @RawValue Any? = null,
     @SerializedName("language") val language: String? = null,
     @SerializedName("country") val country: String? = null,
     @SerializedName("runtime") val runtime: Int? = null,
@@ -86,7 +87,7 @@ data class WatchLink(
     val streamUrl: String get() = url ?: ""
     val preferHls: Boolean
         get() = isHls == 1 || (url?.contains(".m3u8", true) == true) ||
-            (url?.endsWith(".css", true) == true) // CDN serves m3u8 under .css
+            (url?.endsWith(".css", true) == true)
 }
 
 @Parcelize
@@ -123,10 +124,10 @@ data class MovieDetail(
     @SerializedName("poster") val poster: String? = null,
     @SerializedName("banner") val banner: String? = null,
     @SerializedName("trailer_url") val trailerUrl: String? = null,
-    @SerializedName("rating") val rating: Any? = null,
+    @SerializedName("rating") val rating: Double? = null,
     @SerializedName("genres") val genres: List<String>? = null,
     @SerializedName("runtime") val runtime: Int? = null,
-    @SerializedName("release_year") val releaseYear: Any? = null,
+    @SerializedName("release_year") val releaseYear: @RawValue Any? = null,
     @SerializedName("country") val country: String? = null,
     @SerializedName("content_type") val contentType: String? = null,
     @SerializedName("age_rating") val ageRating: String? = null,
@@ -167,7 +168,7 @@ data class Season(
     @SerializedName("season_number") val seasonNumber: Int = 1,
     @SerializedName("title") val title: String? = null,
     @SerializedName("poster") val poster: String? = null,
-    @SerializedName("release_year") val releaseYear: Any? = null,
+    @SerializedName("release_year") val releaseYear: @RawValue Any? = null,
     @SerializedName("episodes_count") val episodesCount: Int? = null
 ) : Parcelable
 
@@ -185,7 +186,7 @@ data class SeriesDetail(
     @SerializedName("status") val seriesStatus: String? = null,
     @SerializedName("age_rating") val ageRating: String? = null,
     @SerializedName("country") val country: String? = null,
-    @SerializedName("release_year") val releaseYear: Any? = null,
+    @SerializedName("release_year") val releaseYear: @RawValue Any? = null,
     @SerializedName("is_hls") val isHls: Int? = null,
     @SerializedName("seasons") val seasons: List<Season>? = null
 ) : Parcelable {
