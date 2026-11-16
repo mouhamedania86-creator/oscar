@@ -2,9 +2,13 @@ package com.alphaflix.app.models
 
 import android.os.Parcelable
 import com.alphaflix.app.api.ApiConstants
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
+import java.lang.reflect.Type
 
 // ── Pagination ────────────────────────────────────────────────────────────────
 
@@ -20,7 +24,31 @@ data class Pagination(
 data class Genre(
     @SerializedName("id") val id: Int = 0,
     @SerializedName("name") val name: String? = null
-)
+) {
+    override fun toString(): String = name ?: ""
+}
+
+// Deserializer مخصص باش يتعامل مع String أو Object
+class GenreDeserializer : JsonDeserializer<Genre> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): Genre {
+        return when {
+            json == null || json.isJsonNull -> Genre()
+            json.isJsonPrimitive -> Genre(name = json.asString)
+            json.isJsonObject -> {
+                val obj = json.asJsonObject
+                Genre(
+                    id = if (obj.has("id")) obj.get("id").asInt else 0,
+                    name = if (obj.has("name")) obj.get("name").asString else null
+                )
+            }
+            else -> Genre()
+        }
+    }
+}
 
 // ── Media Item (movies + series share list structure) ─────────────────────────
 
