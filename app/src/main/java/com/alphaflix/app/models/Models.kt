@@ -15,6 +15,13 @@ data class Pagination(
     @SerializedName("total_pages") val totalPages: Int = 0
 )
 
+// ── Genres ────────────────────────────────────────────────────────────────────
+
+data class Genre(
+    @SerializedName("id") val id: Int = 0,
+    @SerializedName("name") val name: String? = null
+)
+
 // ── Media Item (movies + series share list structure) ─────────────────────────
 
 @Parcelize
@@ -43,7 +50,7 @@ data class MediaItem(
     @SerializedName("adult") val adult: Int? = null,
     @SerializedName("tagline") val tagline: String? = null,
     @SerializedName("quality_source") val qualitySource: String? = null,
-    @SerializedName("genres") val genres: List<String>? = null,
+    @SerializedName("genres") val genres: List<Genre>? = null,
     @SerializedName("type") val type: String? = null,
     @SerializedName("episode_count") val episodeCount: Int? = null,
     @SerializedName("is_hls") val isHls: Int? = null,
@@ -53,6 +60,7 @@ data class MediaItem(
     val displayTitle: String get() = titleAr ?: titleEn ?: "بدون عنوان"
     val fullPosterUrl: String get() = "${ApiConstants.IMAGE_BASE}${poster ?: ""}"
     val fullBannerUrl: String get() = "${ApiConstants.IMAGE_BASE}${banner ?: ""}"
+    val genresText: String get() = genres?.mapNotNull { it.name }?.joinToString(" · ") ?: ""
     val displayRating: String get() {
         return when (val r = rating) {
             is Double -> "%.1f".format(r)
@@ -125,7 +133,7 @@ data class MovieDetail(
     @SerializedName("banner") val banner: String? = null,
     @SerializedName("trailer_url") val trailerUrl: String? = null,
     @SerializedName("rating") val rating: @RawValue Any? = null,
-    @SerializedName("genres") val genres: List<String>? = null,
+    @SerializedName("genres") val genres: List<Genre>? = null,
     @SerializedName("runtime") val runtime: Int? = null,
     @SerializedName("release_year") val releaseYear: @RawValue Any? = null,
     @SerializedName("country") val country: String? = null,
@@ -140,6 +148,7 @@ data class MovieDetail(
     val displayTitle: String get() = titleAr ?: titleEn ?: "بدون عنوان"
     val fullPosterUrl: String get() = "${ApiConstants.IMAGE_BASE}${poster ?: ""}"
     val fullBannerUrl: String get() = "${ApiConstants.IMAGE_BASE}${banner ?: ""}"
+    val genresText: String get() = genres?.mapNotNull { it.name }?.joinToString(" · ") ?: ""
     val displayRating: String get() {
         return when (val r = rating) {
             is Double -> "%.1f".format(r)
@@ -188,7 +197,7 @@ data class SeriesDetail(
     @SerializedName("story") val story: String? = null,
     @SerializedName("poster") val poster: String? = null,
     @SerializedName("banner") val banner: String? = null,
-    @SerializedName("genres") val genres: List<String>? = null,
+    @SerializedName("genres") val genres: List<Genre>? = null,
     @SerializedName("episode_count") val episodeCount: Int? = null,
     @SerializedName("season_count") val seasonCount: Int? = null,
     @SerializedName("status") val seriesStatus: String? = null,
@@ -201,6 +210,7 @@ data class SeriesDetail(
     val displayTitle: String get() = titleAr ?: titleEn ?: "بدون عنوان"
     val fullPosterUrl: String get() = "${ApiConstants.IMAGE_BASE}${poster ?: ""}"
     val fullBannerUrl: String get() = "${ApiConstants.IMAGE_BASE}${banner ?: ""}"
+    val genresText: String get() = genres?.mapNotNull { it.name }?.joinToString(" · ") ?: ""
     val firstSeasonId: Int? get() = seasons?.firstOrNull()?.id
 }
 
