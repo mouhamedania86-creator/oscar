@@ -3,11 +3,6 @@ package com.alphaflix.app.api
 import okhttp3.Interceptor
 import okhttp3.Response
 
-/**
- * Injects Iron + auth headers into every request automatically.
- * Matches live traffic: Authorization, X-Device-Id, X-Key-Id, X-App-Ver,
- * X-Iron-Sig / X-Iron-Ts / X-Iron-Nonce.
- */
 class IronInterceptor : Interceptor {
 
     private val iron = IronHeadersGenerator(
@@ -30,8 +25,7 @@ class IronInterceptor : Interceptor {
             .header("X-Iron-Nonce", ironHeaders["x-iron-nonce"] ?: "")
             .header("X-Iron-Diag", ironHeaders["x-iron-diag"] ?: "")
             .header("User-Agent", "okhttp/4.12.0")
-            .header("Accept-Encoding", "gzip")
-            .header("Connection", "keep-alive")
+            // ✅ تم حذف Accept-Encoding و Connection
 
         return chain.proceed(builder.build())
     }
