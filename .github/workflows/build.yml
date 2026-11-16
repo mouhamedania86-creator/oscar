@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: Build Release APKs
+    name: Build APKs
     runs-on: ubuntu-latest
 
     steps:
@@ -28,51 +28,73 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Make gradlew executable
+      - name: Prepare Gradle wrapper
         run: |
-          if [ -f gradlew ]; then chmod +x gradlew; fi
+          if [ -f gradlew ]; then
+            chmod +x gradlew
+          fi
+          mkdir -p gradle/wrapper
+          if [ ! -f gradle/wrapper/gradle-wrapper.properties ]; then
+            cat > gradle/wrapper/gradle-wrapper.properties << 'PROPS'
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.5-bin.zip
+          networkTimeout=10000
+          validateDistributionUrl=true
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          PROPS
+          fi
 
       - name: Decode keystore (optional)
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > $GITHUB_WORKSPACE/release.jks
+          if [ -n "${KEYSTORE_BASE64}" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > "$GITHUB_WORKSPACE/release.jks"
+            echo "Keystore decoded."
+          else
+            echo "No KEYSTORE_BASE64 secret — unsigned/debug build only."
+          fi
 
-      - name: Write signing properties
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+      - name: Write signing properties (optional)
         env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          cat > keystore.properties << PROP
+          if [ -n "${KEYSTORE_BASE64}" ]; then
+            cat > keystore.properties << PROP
           storeFile=release.jks
           storePassword=${KEY_STORE_PASSWORD}
           keyAlias=${KEY_ALIAS}
           keyPassword=${KEY_PASSWORD}
           PROP
+            echo "keystore.properties written."
+          fi
 
       - name: Build debug APK
         run: |
-          if [ -f gradlew ]; then
+          if [ -f ./gradlew ]; then
             ./gradlew assembleDebug --stacktrace
           else
-            gradle assembleDebug --stacktrace
+            gradle wrapper --gradle-version 8.5
+            ./gradlew assembleDebug --stacktrace
           fi
 
       - name: Build release APK
-        run: |
-          if [ -f gradlew ]; then
-            ./gradlew assembleRelease --stacktrace || ./gradlew assembleDebug --stacktrace
-          else
-            gradle assembleRelease --stacktrace || gradle assembleDebug --stacktrace
-          fi
         env:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEYSTORE_PATH: ${{ github.workspace }}/release.jks
+        run: |
+          if [ -f ./gradlew ]; then
+            ./gradlew assembleRelease --stacktrace || ./gradlew assembleDebug --stacktrace
+          else
+            gradle assembleRelease --stacktrace || gradle assembleDebug --stacktrace
+          fi
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
