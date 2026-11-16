@@ -1,5 +1,7 @@
 package com.alphaflix.app.api
 
+import com.alphaflix.app.models.Genre
+import com.alphaflix.app.models.GenreDeserializer
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,6 +17,7 @@ object ApiClient {
 
     private val gson = GsonBuilder()
         .setLenient()
+        .registerTypeAdapter(Genre::class.java, GenreDeserializer())  // ← هنا السحر
         .create()
 
     private val okHttpClient = OkHttpClient.Builder()
