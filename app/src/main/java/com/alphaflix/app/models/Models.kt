@@ -27,7 +27,7 @@ data class MediaItem(
     @SerializedName("poster") val poster: String? = null,
     @SerializedName("banner") val banner: String? = null,
     @SerializedName("trailer_url") val trailerUrl: String? = null,
-    @SerializedName("rating") val rating: Double? = null,
+    @SerializedName("rating") val rating: @RawValue Any? = null,
     @SerializedName("rating_count") val ratingCount: Int? = null,
     @SerializedName("views_count") val viewsCount: Int? = null,
     @SerializedName("release_date") val releaseDate: String? = null,
@@ -124,7 +124,7 @@ data class MovieDetail(
     @SerializedName("poster") val poster: String? = null,
     @SerializedName("banner") val banner: String? = null,
     @SerializedName("trailer_url") val trailerUrl: String? = null,
-    @SerializedName("rating") val rating: Double? = null,
+    @SerializedName("rating") val rating: @RawValue Any? = null,
     @SerializedName("genres") val genres: List<String>? = null,
     @SerializedName("runtime") val runtime: Int? = null,
     @SerializedName("release_year") val releaseYear: @RawValue Any? = null,
@@ -140,6 +140,14 @@ data class MovieDetail(
     val displayTitle: String get() = titleAr ?: titleEn ?: "بدون عنوان"
     val fullPosterUrl: String get() = "${ApiConstants.IMAGE_BASE}${poster ?: ""}"
     val fullBannerUrl: String get() = "${ApiConstants.IMAGE_BASE}${banner ?: ""}"
+    val displayRating: String get() {
+        return when (val r = rating) {
+            is Double -> "%.1f".format(r)
+            is Number -> "%.1f".format(r.toDouble())
+            is String -> r
+            else -> "N/A"
+        }
+    }
     val bestWatchLink: WatchLink?
         get() = watchLinks
             ?.filter { !it.url.isNullOrBlank() }
