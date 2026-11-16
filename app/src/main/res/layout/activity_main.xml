@@ -25,7 +25,6 @@
         android:background="@color/bg_card"
         app:itemTextColor="@color/text_secondary"
         app:itemIconTint="@color/text_secondary"
-        app:itemActiveIndicatorColor="@color/colorPrimary"
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
